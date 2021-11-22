@@ -4,8 +4,8 @@ const LimitExceededError = require('./LimitExceededError');
 class LimitSizeStream extends stream.Transform {
   constructor(options) {
     super(options);
-    this.limit = option.limit;
-    this.encoding = option.encoding;
+    this.limit = options.limit;
+    this.encoding = options.encoding;
     this.fileSize = 0;
   }
 
