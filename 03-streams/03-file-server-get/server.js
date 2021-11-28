@@ -28,12 +28,6 @@ server.on('request', (req, res) => {
   switch (req.method) {
     case 'GET':
 
-      if (pathname.indexOf('/') !== -1 && pathname.indexOf('.') === -1) {
-          res.statusCode = 400;
-          res.setHeader('Content-Type', 'text/plain');
-          return res.end('No such file or directory');
-      }
-
       if (filepath.indexOf(ROOT) !== 0) {
         res.statusCode = 403;
         res.setHeader('Content-Type', 'text/plain');
@@ -45,10 +39,18 @@ server.on('request', (req, res) => {
           stream.pipe(res);
       });
 
-      stream.on('error', () => {
-        res.setHeader('Content-Type', 'text/plain');
-        res.statusCode = 404;
-        res.end('Not found');
+      stream.on('error', (err) => {
+        if (err.code === 'ENOENT') {
+          if (pathname.indexOf('/') !== -1) {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'text/plain');
+            return res.end('No such file or directory');
+          }
+
+          res.setHeader('Content-Type', 'text/plain');
+          res.statusCode = 404;
+          return res.end('Not found');
+          }
       });
       break;
 
